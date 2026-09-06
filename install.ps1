@@ -134,7 +134,11 @@ if (Tiene claude) {
   try { & claude @args 2>&1 | Out-Null; $mcpOk = $true; Ok "servidor 'logos' registrado en Claude Code (Biblia por defecto: $Biblia)" }
   catch { Warn "no pude registrarlo. Hazlo con: claude mcp add logos --scope user --env LOGOS_DEFAULT_BIBLE=$Biblia -- `"$nodeBin`" `"$entry`"" }
 } else { Warn "Claude Code no esta instalado; cuando lo instales, vuelve a correr este instalador" }
-if (-not $ClaveBiblia) { Info "sin clave de Biblia API: las herramientas de texto biblico por internet quedan apagadas; lo de Logos funciona igual" }
+if (-not $ClaveBiblia) {
+  Info "sin clave de Biblia API: las herramientas de texto biblico por internet quedan apagadas; lo de Logos funciona igual"
+  Info "para activarlas: entra con tu cuenta de Faithlife (la de Logos) en https://api.biblia.com/v1/Users/SignIn, crea una clave"
+  Info "(direccion web: localhost) y vuelve a correr este instalador con:  .\install.ps1 -ClaveBiblia TU_CLAVE"
+}
 
 $cfg = Join-Path $env:APPDATA "Claude\claude_desktop_config.json"
 if (Test-Path (Split-Path $cfg)) {

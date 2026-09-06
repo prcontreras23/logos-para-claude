@@ -78,10 +78,10 @@ mkdir -p "$DESTINO"
 if [[ "$REPO_DIR" != "$DESTINO" ]]; then
   rm -rf "$SERVIDOR"
   cp -R "$REPO_DIR/logos-mcp-server" "$SERVIDOR"
-  cp "$REPO_DIR/lib-requisitos.sh" "$REPO_DIR/desinstalar.sh" "$DESTINO/" 2>/dev/null
+  cp "$REPO_DIR/lib-requisitos.sh" "$REPO_DIR/desinstalar.sh" "$REPO_DIR/clave-biblia.sh" "$DESTINO/" 2>/dev/null
   [[ -f "$REPO_DIR/LICENSE" ]] && cp "$REPO_DIR/LICENSE" "$DESTINO/"
 fi
-chmod +x "$DESTINO/desinstalar.sh" 2>/dev/null
+chmod +x "$DESTINO/desinstalar.sh" "$DESTINO/clave-biblia.sh" 2>/dev/null
 ok "en $DESTINO"
 
 paso "4. Preparando el servidor"
@@ -138,7 +138,11 @@ if tiene claude; then
 else
   warn "Claude Code no está instalado; cuando lo instales, vuelve a correr este instalador"
 fi
-[[ -z "$CLAVE_BIBLIA" ]] && info "sin clave de Biblia API: las herramientas de texto bíblico por internet quedan apagadas; todo lo de Logos funciona igual"
+if [[ -z "$CLAVE_BIBLIA" ]]; then
+  info "sin clave de Biblia API: las herramientas de texto bíblico por internet quedan apagadas; todo lo de Logos funciona igual"
+  info "para activarlas: entra con tu cuenta de Faithlife (la de Logos) en https://api.biblia.com/v1/Users/SignIn,"
+  info "crea una clave (dirección web: localhost) y luego corre:  $DESTINO/clave-biblia.sh TU_CLAVE"
+fi
 
 # ---------------------------------------------------------------- 7. Claude Desktop (opcional)
 

@@ -18,8 +18,8 @@ preguntar() {  # título, mensaje -> 0 si sigue
 avisar() {
   osascript -e "display dialog \"$2\" with title \"$1\" buttons {\"Entendido\"} default button 1 with icon caution" >/dev/null 2>&1
 }
-pedir_texto() {  # título, mensaje -> imprime lo escrito (vacío si cancela)
-  osascript -e "text returned of (display dialog \"$2\" with title \"$1\" default answer \"\" buttons {\"Saltar\", \"Guardar\"} default button 2)" 2>/dev/null || true
+pedir_texto() {  # título, mensaje -> imprime "BOTON|texto" (vacío si cierra)
+  osascript -e "set r to display dialog \"$2\" with title \"$1\" default answer \"\" buttons {\"Saltar\", \"Conseguir clave\", \"Guardar\"} default button 3" -e "return (button returned of r) & \"|\" & (text returned of r)" 2>/dev/null || true
 }
 
 bold() { printf '\033[1m%s\033[0m\n' "$*"; }
@@ -64,8 +64,26 @@ fi
 
 # ---------------------------------------------------------------- clave opcional
 
-CLAVE="$(pedir_texto "Clave de Biblia API (opcional)" "Las herramientas de texto bíblico por internet usan la API gratuita de bibliaapi.com. Si tienes una clave, pégala aquí. Si no, dale a Saltar: todo lo de Logos funciona igual sin ella.")"
-CLAVE="$(printf '%s' "$CLAVE" | tr -d '[:space:]')"
+MENSAJE_CLAVE="Las herramientas de texto bíblico por internet (get_bible_text, search_bible…) usan la API gratuita de Biblia.com. Es opcional: todo lo de Logos funciona sin ella.
+
+Para conseguirla, en 2 minutos:
+1. Dale a «Conseguir clave»: se abre api.biblia.com.
+2. Entra con tu cuenta de Faithlife (la misma de Logos).
+3. Crea una clave nueva. Si te pide una dirección web, pon: localhost
+4. Copia la clave y pégala aquí.
+
+Si prefieres hacerlo después: ~/logos-para-claude/clave-biblia.sh TU_CLAVE"
+
+CLAVE=""
+while :; do
+  R="$(pedir_texto "Clave de Biblia API (opcional)" "$MENSAJE_CLAVE")"
+  BOTON="${R%%|*}"; TEXTO="${R#*|}"
+  case "$BOTON" in
+    "Conseguir clave") open "https://api.biblia.com/v1/Users/SignIn"; sleep 1 ;;
+    "Guardar") CLAVE="$(printf '%s' "$TEXTO" | tr -d '[:space:]')"; break ;;
+    *) break ;;
+  esac
+done
 
 # ---------------------------------------------------------------- instalar
 

@@ -49,7 +49,7 @@ No necesitas saber programar. El instalador se encarga de lo demás: Node.js y, 
 curl -fsSL https://raw.githubusercontent.com/prcontreras23/logos-para-claude/main/instalar.sh | bash
 ```
 
-Baja el proyecto y arranca el instalador. Verás dos diálogos (uno de consentimiento y otro donde puedes pegar, si la tienes, una clave de [bibliaapi.com](https://bibliaapi.com/); si no, dale a Saltar). Al final se abren los dos paneles de permisos de macOS.
+Baja el proyecto y arranca el instalador. Verás dos diálogos: uno de consentimiento y otro que pide, opcional, la clave de Biblia API (ver abajo cómo conseguirla; si no la quieres, dale a Saltar). Al final se abren los dos paneles de permisos de macOS.
 
 ### Mac: doble clic
 
@@ -68,6 +68,25 @@ O descarga el ZIP y haz doble clic en **`Instalar en Windows.bat`**. En Windows 
 1. **Reinicia Claude Code** (cierra la sesión y ábrela de nuevo). El servidor `logos` aparece con 30 herramientas.
 2. **Abre Logos** antes de pedirle a Claude que lea un libro.
 3. Pruébalo: *«¿Qué comentarios en español tengo sobre 1 Corintios?»* y luego *«Lee el primero en 1 Corintios 1:4, tres pantallas»*.
+
+---
+
+## Clave de Biblia API (opcional)
+
+Las herramientas de **texto bíblico por internet** (`get_bible_text`, `search_bible`, `get_passage_context`, `compare_passages`, `scan_references`) usan la API gratuita de [Biblia.com](https://bibliaapi.com/docs/), de la misma casa que Logos. Sin clave quedan apagadas y **todo lo demás funciona igual**: catálogo, lectura de paneles, notas, sermones.
+
+Para conseguirla, unos 2 minutos:
+
+1. Entra en <https://api.biblia.com/v1/Users/SignIn> con tu **cuenta de Faithlife**, la misma con la que abres Logos.
+2. Crea una clave nueva. Si te pide un nombre y una dirección web para la aplicación, pon el nombre que quieras y `localhost` (es para uso en tu computadora; las claves se limitan al sitio que declares y `localhost` está permitido).
+3. Copia la clave.
+
+Dónde ponerla:
+
+- **Durante la instalación**, en el diálogo que la pide (el botón **Conseguir clave** te abre el sitio).
+- **Después**, sin reinstalar: `~/logos-para-claude/clave-biblia.sh TU_CLAVE` en Mac, o `.\install.ps1 -ClaveBiblia TU_CLAVE` en Windows. Reinicia Claude Code.
+
+La API sirve las Biblias RVR60 y RVA en español, además de LEB, KJV, ASV y otras en inglés; las versiones con licencia (NVI, LBLA, RVR95) no están disponibles por esta vía. Para leer esas, Claude abre tu Biblia en Logos y lee el panel.
 
 ---
 
