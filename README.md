@@ -108,6 +108,8 @@ Se pasan como variables de entorno al servidor (`claude mcp add … --env NOMBRE
 
 **Diagnóstico completo**: `node ~/logos-para-claude/logos-mcp-server/dist/cli.js`, o pídele a Claude que corra la herramienta `diagnose`.
 
+**Homebrew roto o que no quieres usar**: `LOGOS_SIN_BREW=1 ./install.sh` obliga al instalador a usar los instaladores oficiales (Node en `~/.local/node`).
+
 ---
 
 ## Desinstalar

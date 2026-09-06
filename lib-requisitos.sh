@@ -26,6 +26,9 @@ ruta_extendida() {
 tiene() { command -v "$1" >/dev/null 2>&1; }
 
 cargar_brew() {
+  # LOGOS_SIN_BREW=1 fuerza los instaladores oficiales aunque haya Homebrew
+  # (útil si brew está roto, y para probar el camino de una Mac limpia).
+  [[ -n "${LOGOS_SIN_BREW:-}" ]] && return 1
   tiene brew && return 0
   local b
   for b in /opt/homebrew/bin/brew /usr/local/bin/brew; do
