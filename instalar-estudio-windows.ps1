@@ -1,9 +1,10 @@
-# Solo el metodo de estudio biblico, para quien ya tiene Logos para Claude en Windows:
+# Solo el skill de estudio, para quien ya tiene Logos para Claude en Windows:
 #
 #   irm https://raw.githubusercontent.com/prcontreras23/logos-para-claude/main/instalar-estudio-windows.ps1 | iex
 #
-# Instala el skill "estudio-biblico", el agente lector, el vault de Obsidian y,
-# si falta, Obsidian. No toca el servidor de Logos.
+# Instala el skill "estudio-logos", el vault de Obsidian y, si falta, Obsidian.
+# Si estaba el metodo anterior (estudio-biblico), lo quita. No toca el servidor
+# de Logos.
 
 $ErrorActionPreference = "Stop"
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
@@ -15,7 +16,7 @@ $Destino = Join-Path $env:USERPROFILE "logos-para-claude"
 function Morir($m) { Write-Host ""; Write-Host "  X $m" -ForegroundColor Red; Write-Host ""; exit 1 }
 
 Write-Host ""
-Write-Host "Bajando el metodo de estudio biblico..." -ForegroundColor White
+Write-Host "Bajando el skill de estudio..." -ForegroundColor White
 $zip = Join-Path $env:TEMP "logos-para-claude.zip"
 try { Invoke-WebRequest -Uri "https://github.com/$Repo/archive/refs/heads/main.zip" -OutFile $zip -UseBasicParsing }
 catch { Morir "No se pudo bajar. Revisa que tengas internet e intentalo otra vez." }

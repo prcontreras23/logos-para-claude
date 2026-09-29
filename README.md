@@ -71,22 +71,29 @@ O descarga el ZIP y haz doble clic en **`Instalar en Windows.bat`**. En Windows 
 
 ---
 
-## Método de estudio bíblico (incluido)
+## Buscar y estudiar en Logos (incluido)
 
-La misma instalación deja listo un **método de estudio por perícopas** para estudiar con Claude como se estudia en serio: primero el estudiante observa el texto y formula su propia lectura, guiado con preguntas y pistas; después Claude lee los comentarios en Logos, revisa su trabajo sin complacer y redacta el estudio con notas al pie verificadas.
+La misma instalación deja el skill **`estudio-logos`**, que busca en dos lugares a la vez:
+
+- **Logos en línea** (`app.logos.com`), en el navegador de la app de Claude: busca en todos tus libros y lee la sección que haga falta, **sin mover el mouse**.
+- **Tu Logos personal**, en el escritorio: tus notas, resaltados, recortes, sermones, listas de pasajes y el catálogo de tus libros (con editorial y año para citar).
+
+Cada resultado viene con obra, página y enlace, y separa lo que leyó completo de lo que solo vio en el extracto de la búsqueda.
+
+**El método de estudio no viene impuesto.** La primera vez que pidas un estudio, Claude te pregunta cómo estudias (para qué, en qué orden, cuándo entran los comentarios, si prefieres que te guíe con preguntas o que lo haga todo, qué quieres que te entregue) y lo anota en `~/.claude/skills/estudio-logos/configuracion.md`. Para empezar hay cuatro modelos (consulta rápida, estudio de pasaje, estudio guiado, estudio temático) que ajustas a tu gusto. Para cambiarlo después, dile «configura mi forma de estudiar» o edita ese archivo.
 
 Qué se instala, en Mac y en Windows:
 
-- El skill **`estudio-biblico`** y el agente **`lector-fuentes-logos`** en tu carpeta `~/.claude`.
-- **Obsidian**, si no lo tienes, y un vault **«Estudios bíblicos»** en Documentos, organizado con el patrón *LLM Wiki* de Andrej Karpathy: tus fuentes, una wiki que Claude mantiene al día con cada estudio (`wiki/index.md`, `wiki/libros/`, `wiki/temas/`, `wiki/log.md`) y el esquema en `CLAUDE.md`.
+- El skill **`estudio-logos`** en tu carpeta `~/.claude`. Si tenías el método anterior (`estudio-biblico` y el agente `lector-fuentes-logos`), se quita; tus estudios no se tocan.
+- **Obsidian**, si no lo tienes, y un vault **«Estudios bíblicos»** en Documentos, donde se guardan tus estudios, organizado con el patrón *LLM Wiki* de Andrej Karpathy (`wiki/index.md`, `wiki/libros/`, `wiki/temas/`, `wiki/log.md`, y el esquema en `CLAUDE.md`).
 
 Cómo se usa:
 
 1. Abre la **app de Claude**, pestaña **Code**, y elige la carpeta «Estudios bíblicos».
-2. La primera vez, abre `app.logos.com` en el navegador de la app de Claude, entra con tu cuenta de Logos y activa *Settings → Accessibility → Enable limited view mode*. Así Claude lee los comentarios **en línea, sin mover el mouse**. La lectura en la app de escritorio (Mac) queda como respaldo y siempre pide permiso antes, porque ocupa el mouse.
-3. Di *«vamos a estudiar la Biblia»* o *«empecemos 1 Corintios»*.
+2. La primera vez, abre `app.logos.com` en el navegador de la app de Claude, entra con tu cuenta de Logos y activa *Settings → Accessibility → Enable limited view mode*. La lectura en la app de escritorio (Mac) queda como respaldo y pide permiso antes, porque ocupa el mouse.
+3. Pide lo que necesites: *«busca en Logos qué dicen mis libros de las primicias»*, *«qué he predicado sobre Romanos 8»*, *«vamos a estudiar Efesios 2:1-10»*.
 
-Si ya tenías Logos para Claude instalado y solo quieres el método:
+Si ya tenías Logos para Claude instalado y solo quieres el skill de estudio (o actualizarlo desde el método anterior):
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/prcontreras23/logos-para-claude/main/instalar-estudio.sh | bash
@@ -96,7 +103,7 @@ curl -fsSL https://raw.githubusercontent.com/prcontreras23/logos-para-claude/mai
 irm https://raw.githubusercontent.com/prcontreras23/logos-para-claude/main/instalar-estudio-windows.ps1 | iex
 ```
 
-Volver a correrlo actualiza el skill **sin tocar lo que ya escribiste** en el vault. Para no instalarlo junto con Logos: `./install.sh --sin-estudio` (Mac) o `.\install.ps1 -SinEstudio` (Windows).
+Volver a correrlo actualiza el skill **sin tocar tu configuración ni lo que ya escribiste** en el vault. Para no instalarlo junto con Logos: `./install.sh --sin-estudio` (Mac) o `.\install.ps1 -SinEstudio` (Windows).
 
 ---
 

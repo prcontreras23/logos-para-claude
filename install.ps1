@@ -161,7 +161,7 @@ Push-Location $Servidor; node dist\cli.js 2>$null | Select-String "OK|MISSING|St
 if (-not $SinEstudio) {
   $est = Join-Path $Destino "estudio-biblico\instalar-estudio.ps1"
   if (Test-Path $est) {
-    try { & $est -Nombre $Nombre } catch { Warn "el metodo de estudio no quedo completo; vuelve a correr: $est" }
+    try { & $est -Nombre $Nombre } catch { Warn "el skill de estudio no quedo completo; vuelve a correr: $est" }
   }
 }
 

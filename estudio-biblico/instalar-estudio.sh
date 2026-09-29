@@ -1,8 +1,8 @@
 #!/bin/bash
-# Método de estudio bíblico para Claude — macOS
+# Estudio en Logos para Claude — macOS
 #
-# Instala el skill «estudio-biblico», el agente «lector-fuentes-logos», un vault
-# de Obsidian para los estudios y, si falta, la app de Obsidian. Lo llama
+# Instala el skill «estudio-logos» (buscar, leer y estudiar en Logos a la manera
+# de cada persona), un vault de Obsidian para los estudios y, si falta, Obsidian. Lo llama
 # install.sh al final, y también se puede correr solo:
 #
 #   ./instalar-estudio.sh [--nombre "Juan Pérez"] [--tratamiento usted|tú] [--vault RUTA]
@@ -32,35 +32,51 @@ info() { printf '\033[90m  · %s\033[0m\n' "$*"; }
 warn() { printf '\033[33m  ! %s\033[0m\n' "$*"; }
 paso() { echo; bold "$*"; }
 
-SKILL_DIR="$HOME/.claude/skills/estudio-biblico"
-AGENTES="$HOME/.claude/agents"
-AJUSTES="$SKILL_DIR/ajustes.json"
+SKILL_DIR="$HOME/.claude/skills/estudio-logos"
+CONFIG="$SKILL_DIR/configuracion.md"
+VIEJO_DIR="$HOME/.claude/skills/estudio-biblico"
+VIEJO_AGENTE="$HOME/.claude/agents/lector-fuentes-logos.md"
 VAULT_NOMBRE="$(basename "$VAULT")"
 
-paso "Método de estudio bíblico"
+paso "Estudio en Logos"
 
 # ---------------------------------------------------------------- nombre
 
-# Si ya hay ajustes de una instalación anterior, se conservan.
-leer_ajuste() {  # clave
-  [[ -f "$AJUSTES" ]] || return 0
-  plutil -extract "$1" raw -o - "$AJUSTES" 2>/dev/null || true
+# El nombre y el trato de una instalación anterior se conservan: primero del
+# configuracion.md actual, si no del ajustes.json del método viejo (estudio-biblico).
+leer_config() {  # campo
+  [[ -f "$CONFIG" ]] || return 0
+  sed -n "s/^- \*\*$1\*\*: *\([^<]*\).*/\1/p" "$CONFIG" | head -1 | sed 's/[[:space:]]*$//'
 }
-[[ -z "$NOMBRE" ]] && NOMBRE="$(leer_ajuste nombre)"
-[[ -z "$TRATAMIENTO" ]] && TRATAMIENTO="$(leer_ajuste tratamiento)"
+leer_viejo() {  # clave
+  [[ -f "$VIEJO_DIR/ajustes.json" ]] || return 0
+  plutil -extract "$1" raw -o - "$VIEJO_DIR/ajustes.json" 2>/dev/null || true
+}
+[[ -z "$NOMBRE" ]] && NOMBRE="$(leer_config nombre)"
+[[ -z "$NOMBRE" ]] && NOMBRE="$(leer_viejo nombre)"
+[[ -z "$TRATAMIENTO" ]] && TRATAMIENTO="$(leer_config tratamiento)"
+[[ -z "$TRATAMIENTO" ]] && TRATAMIENTO="$(leer_viejo tratamiento)"
 if [[ -z "$NOMBRE" && "${ESTUDIO_PREGUNTAR:-1}" != 0 ]] && : < /dev/tty 2>/dev/null; then
   printf '  ¿Cómo se llama la persona que va a estudiar? (Enter para dejarlo en blanco): '
   read -r NOMBRE < /dev/tty || NOMBRE=""
 fi
 [[ -z "$TRATAMIENTO" ]] && TRATAMIENTO="usted"
 
-# ---------------------------------------------------------------- skill y agente
+# ---------------------------------------------------------------- skill
 
-mkdir -p "$SKILL_DIR" "$AGENTES"
-cp "$AQUI/skill/estudio-biblico/"* "$SKILL_DIR/"
-cp "$AQUI/agentes/lector-fuentes-logos.md" "$AGENTES/"
-ok "skill en $SKILL_DIR"
-ok "agente lector-fuentes-logos en $AGENTES"
+mkdir -p "$SKILL_DIR"
+# Se reemplazan los archivos del skill; configuracion.md es de la persona y no se toca.
+find "$SKILL_DIR" -maxdepth 1 -type f ! -name configuracion.md -delete
+cp "$AQUI/skill/estudio-logos/"* "$SKILL_DIR/"
+ok "skill estudio-logos en $SKILL_DIR"
+
+# El método anterior (skill estudio-biblico y agente lector-fuentes-logos) lo
+# instalaba este mismo paquete; se quita para que no compita con el nuevo.
+# Los estudios del vault no se tocan.
+if [[ -d "$VIEJO_DIR" || -f "$VIEJO_AGENTE" ]]; then
+  rm -rf "$VIEJO_DIR" "$VIEJO_AGENTE"
+  ok "quitado el método anterior (estudio-biblico); sus estudios siguen en el vault"
+fi
 
 # ---------------------------------------------------------------- vault
 
@@ -71,19 +87,26 @@ mkdir -p "$VAULT"
 done
 ok "vault «$VAULT_NOMBRE» en $VAULT"
 
-# ---------------------------------------------------------------- ajustes
+# ---------------------------------------------------------------- configuración
 
-escapar() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
-cat > "$AJUSTES" <<JSON
-{
-  "nombre": "$(escapar "$NOMBRE")",
-  "tratamiento": "$(escapar "$TRATAMIENTO")",
-  "vault_ruta": "$(escapar "$VAULT")",
-  "vault_nombre": "$(escapar "$VAULT_NOMBRE")",
-  "notebooklm": {}
-}
-JSON
-ok "ajustes guardados${NOMBRE:+ para $NOMBRE}"
+if [[ -f "$CONFIG" ]]; then
+  ok "configuración existente conservada"
+else
+  if ! NOMBRE="$NOMBRE" TRATAMIENTO="$TRATAMIENTO" VAULT="$VAULT" node -e '
+    const fs = require("fs");
+    let s = fs.readFileSync(process.argv[1], "utf8");
+    const poner = (campo, valor) => {
+      s = s.replace(new RegExp("^(- \\*\\*" + campo + "\\*\\*:)[^<\\n]*", "m"), (_, a) => a + " " + valor + "    ");
+    };
+    poner("nombre", process.env.NOMBRE);
+    poner("tratamiento", process.env.TRATAMIENTO);
+    poner("guardar_en", process.env.VAULT);
+    fs.writeFileSync(process.argv[2], s);
+  ' "$SKILL_DIR/configuracion.ejemplo.md" "$CONFIG" 2>/dev/null; then
+    cp "$SKILL_DIR/configuracion.ejemplo.md" "$CONFIG"
+  fi
+  ok "configuración creada${NOMBRE:+ para $NOMBRE}"
+fi
 
 # ---------------------------------------------------------------- Obsidian
 
@@ -147,6 +170,6 @@ else
 fi
 
 echo
-info "Para estudiar: abre la app de Claude, pestaña Code, elige la carpeta «$VAULT_NOMBRE» y di «vamos a estudiar la Biblia»."
+info "Para estudiar: abre la app de Claude, pestaña Code, elige la carpeta «$VAULT_NOMBRE» y di «vamos a estudiar la Biblia». La primera vez, Claude le pregunta cómo estudia y lo deja anotado."
 info "Para que Claude lea los comentarios sin mover el mouse, entra una vez a app.logos.com en el navegador de la app de Claude"
 info "con tu cuenta de Logos, y activa ahí Settings → Accessibility → Enable limited view mode."

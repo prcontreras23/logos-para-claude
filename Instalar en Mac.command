@@ -49,7 +49,7 @@ Qué va a poder hacer Claude:
 • Buscar en tu catálogo y saber qué libros son tuyos.
 • Abrir un comentario en un pasaje y leer su texto, con la cita.
 • Leer tus notas, resaltados, recortes, sermones y planes de lectura.
-• Guiarte en un método de estudio bíblico por perícopas, con tus estudios guardados en Obsidian (se instala si no lo tienes).
+• Buscar en Logos en línea (app.logos.com) y en tu Logos personal a la vez, y estudiar contigo de la forma en que tú estudias. Tus estudios se guardan en Obsidian (se instala si no lo tienes).
 
 Cómo funciona:
 
@@ -131,7 +131,7 @@ Cierra Claude Code y vuelve a abrirlo. Después pruébalo con algo como:
 
 Abre Logos antes de pedirle que lea un libro.
 
-Para el estudio bíblico: abre la app de Claude, pestaña Code, elige la carpeta «Estudios bíblicos» (en Documentos) y di «vamos a estudiar la Biblia». La primera vez, entra a app.logos.com en el navegador de la app de Claude con tu cuenta de Logos."
+Para el estudio bíblico: abre la app de Claude, pestaña Code, elige la carpeta «Estudios bíblicos» (en Documentos) y di «vamos a estudiar la Biblia». La primera vez, Claude te pregunta cómo estudias y lo deja anotado; puedes cambiarlo cuando quieras. Entra también a app.logos.com en el navegador de la app de Claude con tu cuenta de Logos."
 
 echo
 echo "Ya puedes cerrar esta ventana."

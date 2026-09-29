@@ -9,7 +9,7 @@ Punto de entrada de toda consulta. Claude lo mantiene al día con cada ingest y 
 
 ## Libros
 
-| Libro | Página | Perícopas estudiadas |
+| Libro | Página | Pasajes estudiados |
 |---|---|---|
 
 ## Temas

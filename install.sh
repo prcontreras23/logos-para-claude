@@ -8,8 +8,8 @@
 #   ./install.sh --biblia RVR60          Biblia por defecto para las herramientas de texto
 #   ./install.sh --clave-biblia XXXX     clave gratuita de bibliaapi.com (opcional)
 #   ./install.sh --sin-desktop           no tocar la configuración de Claude Desktop
-#   ./install.sh --nombre "Juan Pérez"    nombre para el método de estudio bíblico
-#   ./install.sh --sin-estudio           no instalar el método de estudio (skill + Obsidian)
+#   ./install.sh --nombre "Juan Pérez"    nombre para el skill de estudio
+#   ./install.sh --sin-estudio           no instalar el skill de estudio ni Obsidian
 
 set -uo pipefail
 
@@ -190,12 +190,12 @@ else
   warn "bases de datos de Logos: $ENCONTRADAS encontradas, $FALTAN no (normal si Logos no ha sincronizado aún; ver: node $SERVIDOR/dist/cli.js)"
 fi
 
-# ---------------------------------------------------------------- 9. método de estudio
+# ---------------------------------------------------------------- 9. skill de estudio
 
 if $INSTALAR_ESTUDIO && [[ -f "$DESTINO/estudio-biblico/instalar-estudio.sh" ]]; then
   ARGS_ESTUDIO=()
   [[ -n "$NOMBRE" ]] && ARGS_ESTUDIO+=(--nombre "$NOMBRE")
-  bash "$DESTINO/estudio-biblico/instalar-estudio.sh" "${ARGS_ESTUDIO[@]+"${ARGS_ESTUDIO[@]}"}" || warn "el método de estudio no quedó completo; vuelve a correr: bash $DESTINO/estudio-biblico/instalar-estudio.sh"
+  bash "$DESTINO/estudio-biblico/instalar-estudio.sh" "${ARGS_ESTUDIO[@]+"${ARGS_ESTUDIO[@]}"}" || warn "el skill de estudio no quedó completo; vuelve a correr: bash $DESTINO/estudio-biblico/instalar-estudio.sh"
 fi
 
 # ---------------------------------------------------------------- final
