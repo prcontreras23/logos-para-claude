@@ -69,7 +69,7 @@ if ! node_sirve; then
 Instálalo desde https://nodejs.org (versión LTS) y vuelve a correr este instalador."
 fi
 if ! tiene_clt; then
-  instalar_clt && ok "Command Line Tools" || warn "sin Command Line Tools: todo funciona menos leer el texto de los paneles y las capturas. Instálalas con: xcode-select --install"
+  instalar_clt && ok "Command Line Tools" || warn "sin Command Line Tools (no suelen hacer falta: los ayudantes de pantalla vienen compilados). Si algo falla, instálalas con: xcode-select --install"
 fi
 if ! tiene claude; then
   info "instalando Claude Code..."
@@ -107,14 +107,14 @@ npm run build --loglevel=error 2>&1 | grep -iE "error" && morir "La compilación
 [[ -f "$SERVIDOR/dist/index.js" ]] || morir "La compilación no produjo dist/index.js."
 ok "compilado"
 
-if tiene_clt; then
-  info "compilando los ayudantes de pantalla..."
+if true; then
+  info "preparando los ayudantes de pantalla (vienen ya compilados)..."
   node -e '
     Promise.all([
       import("./dist/services/screenshot-capture.js").then(m => m.ensureHelper()),
       import("./dist/services/panel-text.js").then(m => m.ensureDragHelper()),
     ]).then(() => process.exit(0)).catch(e => { console.error(String(e.message||e)); process.exit(1); });
-  ' >/dev/null 2>&1 && ok "ayudantes listos" || warn "los ayudantes se compilarán la primera vez que se usen"
+  ' >/dev/null 2>&1 && ok "ayudantes listos" || warn "los ayudantes no quedaron listos; el diagnóstico de abajo dice por qué"
 fi
 
 # ---------------------------------------------------------------- 5. Logos
@@ -181,6 +181,9 @@ DIAG="$(cd "$SERVIDOR" && node dist/cli.js 2>/dev/null || true)"
 ENCONTRADAS="$(printf '%s\n' "$DIAG" | grep -c '✓ [a-zA-Z]' || true)"
 FALTAN="$(printf '%s\n' "$DIAG" | grep -c '✗ [a-zA-Z]' || true)"
 if printf '%s' "$DIAG" | grep -q "opened a database successfully"; then ok "motor SQLite funcionando"; fi
+while IFS= read -r linea; do
+  [[ -n "$linea" ]] && warn "${linea#*\[falla\] }"
+done < <(printf '%s\n' "$DIAG" | grep '\[falla\]' || true)
 if [[ "${FALTAN:-0}" -eq 0 ]]; then
   ok "bases de datos de Logos: $ENCONTRADAS encontradas"
 else
