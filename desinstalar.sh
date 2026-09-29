@@ -28,6 +28,7 @@ if [[ -f "$CFG" ]] && command -v node >/dev/null 2>&1; then
 fi
 
 rm -rf "$HOME/Library/Caches/logos-mcp" && ok "ayudantes de pantalla borrados"
+rm -rf "$HOME/.claude/skills/estudio-biblico" "$HOME/.claude/agents/lector-fuentes-logos.md" && ok "método de estudio quitado (el vault con tus estudios no se toca)"
 rm -rf "$DESTINO" "$HOME/logos-para-claude-fuente" && ok "carpeta $DESTINO borrada"
 
 echo

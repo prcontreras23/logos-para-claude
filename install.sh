@@ -8,6 +8,8 @@
 #   ./install.sh --biblia RVR60          Biblia por defecto para las herramientas de texto
 #   ./install.sh --clave-biblia XXXX     clave gratuita de bibliaapi.com (opcional)
 #   ./install.sh --sin-desktop           no tocar la configuración de Claude Desktop
+#   ./install.sh --nombre "Juan Pérez"    nombre para el método de estudio bíblico
+#   ./install.sh --sin-estudio           no instalar el método de estudio (skill + Obsidian)
 
 set -uo pipefail
 
@@ -17,12 +19,16 @@ SERVIDOR="$DESTINO/logos-mcp-server"
 BIBLIA_DEFECTO="RVR60"
 CLAVE_BIBLIA="${BIBLIA_API_KEY:-}"
 TOCAR_DESKTOP=true
+INSTALAR_ESTUDIO=true
+NOMBRE=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --biblia) BIBLIA_DEFECTO="$2"; shift 2 ;;
     --clave-biblia) CLAVE_BIBLIA="$2"; shift 2 ;;
     --sin-desktop) TOCAR_DESKTOP=false; shift ;;
+    --nombre) NOMBRE="$2"; shift 2 ;;
+    --sin-estudio) INSTALAR_ESTUDIO=false; shift ;;
     *) shift ;;
   esac
 done
@@ -79,6 +85,8 @@ if [[ "$REPO_DIR" != "$DESTINO" ]]; then
   rm -rf "$SERVIDOR"
   cp -R "$REPO_DIR/logos-mcp-server" "$SERVIDOR"
   cp "$REPO_DIR/lib-requisitos.sh" "$REPO_DIR/desinstalar.sh" "$REPO_DIR/clave-biblia.sh" "$DESTINO/" 2>/dev/null
+  rm -rf "$DESTINO/estudio-biblico"
+  [[ -d "$REPO_DIR/estudio-biblico" ]] && cp -R "$REPO_DIR/estudio-biblico" "$DESTINO/estudio-biblico"
   [[ -f "$REPO_DIR/LICENSE" ]] && cp "$REPO_DIR/LICENSE" "$DESTINO/"
 fi
 chmod +x "$DESTINO/desinstalar.sh" "$DESTINO/clave-biblia.sh" 2>/dev/null
@@ -177,6 +185,14 @@ if [[ "${FALTAN:-0}" -eq 0 ]]; then
   ok "bases de datos de Logos: $ENCONTRADAS encontradas"
 else
   warn "bases de datos de Logos: $ENCONTRADAS encontradas, $FALTAN no (normal si Logos no ha sincronizado aún; ver: node $SERVIDOR/dist/cli.js)"
+fi
+
+# ---------------------------------------------------------------- 9. método de estudio
+
+if $INSTALAR_ESTUDIO && [[ -f "$DESTINO/estudio-biblico/instalar-estudio.sh" ]]; then
+  ARGS_ESTUDIO=()
+  [[ -n "$NOMBRE" ]] && ARGS_ESTUDIO+=(--nombre "$NOMBRE")
+  bash "$DESTINO/estudio-biblico/instalar-estudio.sh" "${ARGS_ESTUDIO[@]+"${ARGS_ESTUDIO[@]}"}" || warn "el método de estudio no quedó completo; vuelve a correr: bash $DESTINO/estudio-biblico/instalar-estudio.sh"
 fi
 
 # ---------------------------------------------------------------- final

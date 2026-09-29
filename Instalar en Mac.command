@@ -49,6 +49,7 @@ Qué va a poder hacer Claude:
 • Buscar en tu catálogo y saber qué libros son tuyos.
 • Abrir un comentario en un pasaje y leer su texto, con la cita.
 • Leer tus notas, resaltados, recortes, sermones y planes de lectura.
+• Guiarte en un método de estudio bíblico por perícopas, con tus estudios guardados en Obsidian (se instala si no lo tienes).
 
 Cómo funciona:
 
@@ -85,12 +86,20 @@ while :; do
   esac
 done
 
+# ---------------------------------------------------------------- nombre
+
+R="$(osascript -e 'set r to display dialog "¿Cómo te llamas? Claude te llamará así en tus sesiones de estudio bíblico." with title "Tu nombre" default answer "" buttons {"Saltar", "Guardar"} default button 2' -e 'return (button returned of r) & "|" & (text returned of r)' 2>/dev/null || true)"
+NOMBRE=""
+[[ "${R%%|*}" == "Guardar" ]] && NOMBRE="${R#*|}"
+
 # ---------------------------------------------------------------- instalar
 
 ARGS=(--biblia RVR60)
+[[ -n "$NOMBRE" ]] && ARGS+=(--nombre "$NOMBRE")
 [[ -n "$CLAVE" ]] && ARGS+=(--clave-biblia "$CLAVE")
 
 chmod +x "$REPO_DIR/install.sh" 2>/dev/null
+export ESTUDIO_PREGUNTAR=0  # el nombre ya se pidió en el diálogo
 if ! "$REPO_DIR/install.sh" "${ARGS[@]}"; then
   morir "Algo falló durante la instalación. Revisa el texto de esta ventana para ver en qué paso."
 fi
@@ -120,7 +129,9 @@ Cierra Claude Code y vuelve a abrirlo. Después pruébalo con algo como:
 «Lee el Comentario Bíblico Adventista en Romanos 8:28»
 «¿Qué sermones he predicado sobre la gracia?»
 
-Abre Logos antes de pedirle que lea un libro."
+Abre Logos antes de pedirle que lea un libro.
+
+Para el estudio bíblico: abre la app de Claude, pestaña Code, elige la carpeta «Estudios bíblicos» (en Documentos) y di «vamos a estudiar la Biblia». La primera vez, entra a app.logos.com en el navegador de la app de Claude con tu cuenta de Logos."
 
 echo
 echo "Ya puedes cerrar esta ventana."

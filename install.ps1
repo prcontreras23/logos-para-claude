@@ -11,7 +11,9 @@
 
 param(
   [string]$Biblia = "RVR60",
-  [string]$ClaveBiblia = $env:BIBLIA_API_KEY
+  [string]$ClaveBiblia = $env:BIBLIA_API_KEY,
+  [string]$Nombre = "",
+  [switch]$SinEstudio
 )
 
 $ErrorActionPreference = "Stop"
@@ -105,6 +107,10 @@ if ($RepoDir -ne $Destino) {
   if (Test-Path $Servidor) { Remove-Item -Recurse -Force $Servidor }
   Copy-Item -Recurse (Join-Path $RepoDir "logos-mcp-server") $Servidor
   foreach ($f in @("LICENSE","desinstalar.ps1")) { $src = Join-Path $RepoDir $f; if (Test-Path $src) { Copy-Item $src $Destino -Force } }
+  $estudioDest = Join-Path $Destino "estudio-biblico"
+  if (Test-Path $estudioDest) { Remove-Item -Recurse -Force $estudioDest }
+  $estudioSrc = Join-Path $RepoDir "estudio-biblico"
+  if (Test-Path $estudioSrc) { Copy-Item -Recurse $estudioSrc $estudioDest }
 }
 Ok "en $Destino"
 
@@ -151,6 +157,13 @@ if (Test-Path (Split-Path $cfg)) {
 
 Paso "7. Comprobando"
 Push-Location $Servidor; node dist\cli.js 2>$null | Select-String "OK|MISSING|Status" | ForEach-Object { "    $_" }; Pop-Location
+
+if (-not $SinEstudio) {
+  $est = Join-Path $Destino "estudio-biblico\instalar-estudio.ps1"
+  if (Test-Path $est) {
+    try { & $est -Nombre $Nombre } catch { Warn "el metodo de estudio no quedo completo; vuelve a correr: $est" }
+  }
+}
 
 Write-Host ""
 Bold "=== Listo ==="

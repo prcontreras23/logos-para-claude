@@ -15,6 +15,9 @@ if ((Test-Path $cfg) -and (Get-Command node -ErrorAction SilentlyContinue)) {
   node -e 'const fs=require("fs");const p=process.argv[1];try{const c=JSON.parse(fs.readFileSync(p,"utf8"));if(c.mcpServers&&c.mcpServers.logos){delete c.mcpServers.logos;fs.writeFileSync(p,JSON.stringify(c,null,2)+"\n");process.exit(0)}}catch{};process.exit(1)' $cfg 2>$null
   if ($LASTEXITCODE -eq 0) { Ok "quitado de Claude Desktop" } else { Info "no estaba en Claude Desktop" }
 }
+foreach ($d in @((Join-Path $env:USERPROFILE ".claude\skills\estudio-biblico"), (Join-Path $env:USERPROFILE ".claude\agents\lector-fuentes-logos.md"))) {
+  if (Test-Path $d) { Remove-Item -Recurse -Force $d; Ok "borrado $d (el vault con tus estudios no se toca)" }
+}
 foreach ($d in @($Destino, (Join-Path $env:USERPROFILE "logos-para-claude-fuente"))) {
   if (Test-Path $d) { Remove-Item -Recurse -Force $d; Ok "borrado $d" }
 }
